@@ -295,10 +295,90 @@
 //   }
 // }
 
-import 'package:flutter/material.dart';
+import 'dart:io';
 
-class LoginStudent extends StatelessWidget {
+import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
+import 'package:resonate/login_student.dart';
+import 'constants.dart';
+import 'global_variables.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:resonate/login_student.dart';
+
+import 'login_page.dart';
+
+class Main extends StatelessWidget {
+  // const Main({Key? key}) : super(key: key);
+  Future<Widget> main() async {
+    WidgetsFlutterBinding.ensureInitialized();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var email = prefs.getString('email');
+    // ignore: avoid_print
+    print(email);
+    runApp(
+        MaterialApp(home: email == null ? const LoginPage() : LoginStudent()));
+    return Container();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return LoginPage();
+  }
+}
+
+class LoginStudent extends StatefulWidget {
   const LoginStudent({Key? key}) : super(key: key);
+
+  @override
+  State<LoginStudent> createState() => _LoginStudentState();
+}
+
+class _LoginStudentState extends State<LoginStudent> {
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  final user = FirebaseAuth.instance.currentUser();
+
+  void getCurrentUser() async {
+    final FirebaseUser User = await user;
+    Variables.currentEmail = User.email;
+    // Similarly we can get email as well
+    //final uemail = user.email;
+    print(Variables.currentEmail);
+    //print(uemail);
+  }
+
+  Future<void> resetPassword(_email) async {
+    //await _auth.sendPasswordResetEmail(email: _email);
+
+    await _auth.sendPasswordResetEmail(email: _email).then((result) {
+      const snackBar = SnackBar(
+        content: Text('Password reset link has been sent!'),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      Navigator.of(context).pop();
+      _email = "";
+    }).catchError((error) {
+      const snackBar = SnackBar(
+        content: Text('User does not exist!'),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      Navigator.of(context).pop();
+      _email = "";
+    });
+  }
+
+  final resetEmail = TextEditingController();
+
+  String _email = "";
+
+  String _password = "";
+
+  final _auth = FirebaseAuth.instance;
+
+  bool _passwordVisible = false;
 
   @override
   Widget build(BuildContext context) {
@@ -313,6 +393,7 @@ class LoginStudent extends StatelessWidget {
               ),
             ),
             child: Scaffold(
+              resizeToAvoidBottomInset: false,
               backgroundColor: Colors.transparent,
               body: Column(
                 children: [
@@ -329,18 +410,79 @@ class LoginStudent extends StatelessWidget {
                           fontWeight: FontWeight.w500,
                         ),
                         textAlign:TextAlign.center),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/RegisterStudent');
+                      },
                       style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30.0),
                         ),
                       ),
                     ),
-                    
+
                   ),
               ),
+                  const SizedBox
+                    (
+                    height: 50.0,
+                  ),
                   Padding(
-                    padding: const EdgeInsets.only(top: 280.0, left:77.0),
+                    padding: const EdgeInsets.only(left: 50, right: 50),
+                    child: TextField(
+                        style: const TextStyle(
+                        ),
+                        onChanged: (value) {
+                          _email = value;
+                        },
+                        keyboardType: TextInputType.emailAddress,
+                        textAlign: TextAlign.start,
+                        decoration:
+                        kInputDecoration.copyWith(hintText: "Email", fillColor: Colors.white, filled: true)
+                    ),
+                  ),
+                  const SizedBox
+                    (
+                    height: 25.0,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 50, right: 50),
+                    child: TextField(
+                      keyboardType: TextInputType.text,
+                      //controller: _userPasswordController,
+                      onChanged: (value) {
+                        _password = value;
+                      },
+                      obscureText: !_passwordVisible,
+                      decoration: kInputDecoration.copyWith(
+                          hintText:
+                          "Password",
+                          //This will obscure text dynamically
+                          // Here is key idea
+                          suffixIcon: IconButton(
+                              icon: IconTheme(
+                                data: const IconThemeData(
+                                    color: Colors.white),
+                                child: Icon(
+                                  // Based on passwordVisible state choose the icon
+                                  _passwordVisible
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                ),
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _passwordVisible = !_passwordVisible;
+                                });
+                              }
+                            // Update the state i.e. toogle the state of passwordVisible variable
+
+                          ),
+                          fillColor: Colors.white, filled: true
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 50.0, left: 0.0),
                     child: Container(
                       width: 150,
                       height: 60,
@@ -349,7 +491,11 @@ class LoginStudent extends StatelessWidget {
                         gradient: LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
-                          colors: [Color(0xff415D5F), Color(0xff4E7575), Color(0xff2E5B5B)],
+                          colors: [
+                            Color(0xff415D5F),
+                            Color(0xff4E7575),
+                            Color(0xff2E5B5B)
+                          ],
                         ),
                       ),
                       child: MaterialButton(
@@ -359,7 +505,27 @@ class LoginStudent extends StatelessWidget {
                           'Login',
                           style: TextStyle(color: Colors.white, fontSize: 20),
                         ),
-                        onPressed: () {},
+                        onPressed: () async {
+                          try {
+                            final user = await _auth.signInWithEmailAndPassword(
+                                email: _email, password: _password);
+                            // ignore: unnecessary_null_comparison
+                            if (user !=  null) {
+                              var userRecord = FirebaseAuth.instance.currentUser().then((user) => Variables.currentEmail =user.email);
+                              SharedPreferences prefs = await SharedPreferences.getInstance();
+                              prefs.setString('email', _email);
+                              Navigator.pushNamed(context, '/Dashboard');
+                              print("Logged IN");
+                              print(Variables.currentEmail);
+                            }
+                          }
+                          catch (e) {
+                            print(e);
+                            setState(() {
+                              const snackBar =  SnackBar(content: Text('Wrong Email or Password'),);
+                              ScaffoldMessenger.of(context).showSnackBar(snackBar);});
+                          }
+                        },
                       ),
                     ),
                   ),

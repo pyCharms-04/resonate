@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'login_page.dart';
 import 'login_student.dart';
 import 'login_teacher.dart';
+import 'dashboard.dart';
+import 'register_teacher.dart';
+import 'register_student.dart';
 
 void main() {
   runApp(
@@ -11,11 +14,9 @@ void main() {
           '/': (context) => const LoginPage(),
           '/LoginStudent': (context) => const LoginStudent(),
           '/LoginTeacher': (context) => const LoginTeacher(),
-          //'/settings': (context) => SettingsPane(),
-          //'/changeFont': (context) => FontChange(),
-          //'/modeSwitch': (context) => ModeSwitch(),
-          //'/changeFontSize': (context) => FontSizeModify(),
-          //'/notesPage': (context) => Notes(),
+          '/Dashboard': (context) => Dashboard(),
+          '/RegisterTeacher': (context) => const RegisterTeacher(),
+          '/RegisterStudent': (context) => const RegisterStudent(),
         },
       ),
   );
