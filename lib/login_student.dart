@@ -300,17 +300,14 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/material.dart';
-import 'package:resonate/login_student.dart';
 import 'constants.dart';
 import 'global_variables.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:resonate/login_student.dart';
-
 import 'login_page.dart';
 
 class Main extends StatelessWidget {
+  const Main({Key? key}) : super(key: key);
+
   // const Main({Key? key}) : super(key: key);
   Future<Widget> main() async {
     WidgetsFlutterBinding.ensureInitialized();

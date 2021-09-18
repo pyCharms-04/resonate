@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:line_icons/line_icons.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -38,7 +39,7 @@ class _LoginPageState extends State<LoginPage> {
                   Padding(
                     padding: const EdgeInsets.only(top: 50.0, right: 100.0),
                     child: IconButton(
-                      icon: const Icon(Icons.double_arrow),
+                      icon: const Icon(LineIcons.angleDoubleRight),
                       color: Colors.black,
                       iconSize: 75.0,
                       onPressed: (){
@@ -49,9 +50,9 @@ class _LoginPageState extends State<LoginPage> {
                   Padding(
                     padding: const EdgeInsets.only(top: 20.0, left: 250),
                     child: IconButton(
-                      icon: const Icon(Icons.keyboard_arrow_left_outlined),
+                      icon: const Icon(LineIcons.angleDoubleLeft),
                       color: Colors.black,
-                      iconSize: 100.0,
+                      iconSize: 75.0,
                       onPressed: ()
                     {
                       Navigator.pushNamed(context, '/LoginTeacher');
@@ -59,7 +60,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   const Padding(
-                    padding: EdgeInsets.only(top: 68.0, left: 75.0),
+                    padding: EdgeInsets.only(top: 90.0, left: 106.0),
                     child: Text(
                       'Teacher',
                       style: TextStyle(

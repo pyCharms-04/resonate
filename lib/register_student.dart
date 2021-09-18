@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:firebase_auth/firebase_auth.dart';
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/services.dart';
 import 'package:resonate/login_student.dart';
 import 'package:resonate/login_teacher.dart';
 import 'constants.dart';
 import 'global_variables.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-//import 'package:resonate/register_student.dart';
 
 class Main extends StatelessWidget {
+  const Main({Key? key}) : super(key: key);
+
   // const Main({Key? key}) : super(key: key);
   Future<Widget> main() async {
     WidgetsFlutterBinding.ensureInitialized();
@@ -47,7 +51,12 @@ class _RegisterStudentState extends State<RegisterStudent> {
     print(Variables.currentEmail);
     //print(uemail);
   }
-
+  String _errorMessage = '';
+  void processError(final PlatformException error) {
+    setState(() {
+      _errorMessage = error.message!;
+    });
+  }
   String _email = "";
   String _firstname = "";
   String _lastname = "";
@@ -55,7 +64,6 @@ class _RegisterStudentState extends State<RegisterStudent> {
   String _confirmpassword = "";
   final _auth = FirebaseAuth.instance;
   bool _passwordVisible = false;
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -159,19 +167,6 @@ class _RegisterStudentState extends State<RegisterStudent> {
                     height: 25.0,
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(left: 50, right: 50),
-                    child: TextField(
-                        style: const TextStyle(),
-                        onChanged: (value) {
-                          _confirmpassword = value;
-                        },
-                        keyboardType: TextInputType.text,
-                        textAlign: TextAlign.start,
-                        decoration:
-                        kInputDecoration.copyWith(
-                            hintText: "Confirm Password", fillColor: Colors.white, filled: true)),
-                  ),
-                  Padding(
                     padding: const EdgeInsets.only(top: 35.0, left: 0.0),
                     child: Container(
                       width: 150,
@@ -195,7 +190,23 @@ class _RegisterStudentState extends State<RegisterStudent> {
                           'Register',
                           style: TextStyle(color: Colors.white, fontSize: 20),
                         ),
-                        onPressed: () {},
+    onPressed:() {
+    FirebaseAuth.instance.createUserWithEmailAndPassword(
+    email: _email,
+    password: _password)
+        .then((onValue) {
+    Firestore.instance.collection("data").document(_firstname).setData({
+    "firstname": _firstname,
+    "lastname": _lastname,
+    "email": _email,
+    "password":_password,
+    }).then((userInfoValue) {
+    Navigator.pushNamed(context, '/LoginStudent');
+    });
+    }).catchError((onError) {
+    processError(onError);
+    });
+    },
                       ),
                     ),
                   ),
