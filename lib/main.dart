@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:resonate/register_1.dart';
 import 'package:resonate/screen_home.dart';
+import 'package:resonate/screen_join.dart';
 import 'login_page.dart';
 import 'login_student.dart';
 import 'login_teacher.dart';
@@ -16,11 +17,12 @@ void main() {
           '/': (context) => const LoginPage(),
           '/LoginStudent': (context) => const LoginStudent(),
           '/LoginTeacher': (context) => const LoginTeacher(),
-          '/Dashboard': (context) => Dashboard(),
+          '/Dashboard': (context) => const Dashboard(),
           '/RegisterTeacher': (context) => const RegisterTeacher(),
           '/RegisterStudent': (context) => const RegisterStudent(),
           '/R' : (context) =>  RegisterPage(),
-          '/Join': (context) => const Join(),
+          '/Join': (context) => Join(),
+         // '/Home': (context) => Home()
         },
       ),
   );

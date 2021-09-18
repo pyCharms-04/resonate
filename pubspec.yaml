@@ -43,8 +43,13 @@ dependencies:
   shared_preferences: ^2.0.7
   line_icons: ^2.0.0
   floating_bottom_navigation_bar: ^1.5.2
-  jitsi_meet: ^0.2.0
-  share: ^0.6.4+2
+  jitsi_meet: ^2.1.0
+  share: ^2.0.4
+  uuid: ^2.0.4
+  path_provider: ^2.0.5
+  objectdb: ^1.2.1+1
+  permission_handler: ^5.1.0+2
+  provider: ^5.0.0
 
 dev_dependencies:
   flutter_test:

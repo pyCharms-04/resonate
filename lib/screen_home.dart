@@ -1,145 +1,151 @@
-import 'package:floating_bottom_navigation_bar/floating_bottom_navigation_bar.dart';
+/*
 import 'package:flutter/material.dart';
-// ignore: import_of_legacy_library_into_null_safe
+import 'package:resonate/provider_meeting.dart';
+import 'package:provider/provider.dart';
+import 'package:resonate/provider_meeting.dart';
+
+import 'package:share/share.dart';
 import 'package:jitsi_meet/jitsi_meet.dart';
-import 'package:line_icons/line_icons.dart';
 
-class Join extends StatefulWidget {
-  const Join({Key? key}) : super(key: key);
-
+class Home extends StatefulWidget {
   @override
-  _JoinState createState() => _JoinState();
+  _HomeState createState() => _HomeState();
 }
 
-class _JoinState extends State<Join> {
+class _HomeState extends State<Home> {
   final _formKey = GlobalKey<FormState>();
-  String _formMeetingId = '';
+  String _formMeetingName = '';
+  bool _isLoading = true;
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: SafeArea(
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          title: const Text('Dashboard'),
-          backgroundColor: const Color(0xff006F73),
-        ),
-        drawer: Drawer(
-          child: Container(
-            color: const Color(0xff006F73),
-            child: ListView(
-              padding: EdgeInsets.zero,
-              children: <Widget>[
-                const SizedBox(
-                  height: 114.0,
-                  child: DrawerHeader(
-                    decoration: BoxDecoration(),
-                    child: Text(
-                      'Settings',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 25,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(
-                  height: 20.0,
-                ),
-                ListTile(
-                    leading: const Padding(
-                      padding: EdgeInsets.only(left: 15.0),
-                      child: Icon(Icons.logout, size: 36.0,
-                      color: Colors.white,
-                      ),
-                    ),
-                    title: const Padding(
-                      padding: EdgeInsets.only(left: 15.0),
-                      child: Text('Logout', style: TextStyle(fontSize: 24.0, color: Colors.white)),
-                    ),
-                    onTap: () => {
-                      Navigator.pushNamed(context, '/'),
-                    }),
-              ],
-            ),
-          ),
-        ),
-        extendBody: true,
-        bottomNavigationBar: FloatingNavbar(
-          backgroundColor: const Color(0xff3FBBBD),
-          onTap: (int val) {
-            switch (val) {
-              case 0:
-                {
-                  setState(() =>{Navigator.pushNamed(context, '/Dashboard')});
-                }
-                break;
+  void initState() {
+    Provider.of<MeetingsProvider>(context, listen: false).getAll();
+    // TODO: implement initState
+    super.initState();
+  }
 
-              case 1:
-                {
-                  setState(() =>{Navigator.pushNamed(context, '/Join')});
-                }
-                break;
-              case 2:
-                {
-                  setState(() =>{Navigator.pushNamed(context, '/RegisterTeacher')});
-                }
-                break;
-              default:
-                {
-                  print("HIIIIIIIIIIIIIIIIIIII");
-                }
-                break;
-            }
-          },
-          currentIndex: 1,
-          items: [
-            FloatingNavbarItem(icon: Icons.home, title: 'Home'),
-            FloatingNavbarItem(icon: LineIcons.meetup, title: 'Meets',),
-            FloatingNavbarItem(icon: LineIcons.excelFile, title: 'Attendance record'),
-          ],
-        ),
-        body: Column(
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(40),
-              child: Form(
-                key: _formKey,
-                child: TextFormField(
-                  onSaved: (value) => _formMeetingId = value!,
-                  decoration: const InputDecoration(
-                    labelText: 'Enter a MeetingID',
-                  ),
-                  validator: (value) {
-                    if (value!.isEmpty) return "Enter Meeting ID";
-                    return null;
-                  },
+  @override
+  Widget build(BuildContext context) {}
+}
+   // return Consumer<MeetingsProvider>(
+     */
+/* builder: (BuildContext context, meetingProvider, Widget child)
+      {
+        print(meetingProvider.listMeetings);
+
+        return Container(
+          child: Column(
+            children: <Widget>[
+              SizedBox(
+                height: 20,
+              ),
+              RaisedButton(
+                padding:
+                EdgeInsets.only(top: 10, left: 20, right: 20, bottom: 10),
+                onPressed: () => _meetingForm(context),
+                child: Text(
+                  'New Conference',
+                  style: TextStyle(fontSize: 20),
                 ),
               ),
-            ),
-            RaisedButton(
-              onPressed: () => _joinMeeting(),
-              child: const Text('Join Meeting'),
-            )
-          ],
+              SizedBox(height: 20),
+              Container(
+                height: 200,
+                child: ListView.builder(
+                  itemCount: meetingProvider.listMeetings.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return ListTile(
+                      title: Text(meetingProvider.listMeetings[index]['name']),
+                      subtitle:
+                      Text(meetingProvider.listMeetings[index]['meeting']),
+                      trailing: Wrap(
+                        children: <Widget>[
+                          FlatButton(
+                            onPressed: () => meetingProvider.removeMeeting(
+                                meetingProvider.listMeetings[index]['meeting']),
+                            child: Text('Delete'),
+                          ),
+                          FlatButton(
+                              onPressed: () => {
+                                Share.share(
+                                    'Join me MeetingID: ' +
+                                        meetingProvider.listMeetings[index]
+                                        ['meeting'])
+                              },
+                              child: Text('Share')),
+                          FlatButton(
+                              onPressed: () => _joinMeeting(meetingProvider
+                                  .listMeetings[index]['meeting']),
+                              child: Text('Join'))
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              )
+            ],
+          ),
+        );
+      },
+    );*//*
+
+  _joinMeeting(meetingid) async {
+    try {
+      var options = JitsiMeetingOptions()..room = meetingid;
+
+      await JitsiMeet.joinMeeting(options);
+    } catch (error) {
+      debugPrint("error: $error");
+    }
+  }
+
+  _meetingForm(context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => Padding(
+        padding: MediaQuery.of(context).viewInsets,
+        child: Container(
+          padding: EdgeInsets.all(10),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              SizedBox(height: 20),
+              Form(
+                key: _formKey,
+                child: Wrap(
+                  children: <Widget>[
+                    TextFormField(
+                      onSaved: (value) => _formMeetingName = value!,
+                      decoration: InputDecoration(labelText: "Meeting Name"),
+                      validator: (value) {
+                        if (value!.isEmpty) return "Enter Meeting Name";
+                        return null;
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 10),
+              RaisedButton(
+                onPressed: () => _createMeeting(context),
+                child: Text('Create Meeting'),
+              )
+            ],
+          ),
         ),
       ),
-    ),
     );
   }
 
-  _joinMeeting() async {
+  _createMeeting(context) {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      try {
-        print(_formMeetingId);
-        var options = JitsiMeetingOptions()..room = _formMeetingId;
 
-        await JitsiMeet.joinMeeting(options);
-      } catch (error) {
-        debugPrint("error: $error");
-      }
+      Provider.of<MeetingsProvider>(context, listen: false)
+          .addMeeting(_formMeetingName);
+      Navigator.pop(context);
     }
   }
 }
+*/
