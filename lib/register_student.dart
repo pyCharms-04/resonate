@@ -64,6 +64,7 @@ class _RegisterStudentState extends State<RegisterStudent> {
   String _confirmpassword = "";
   final _auth = FirebaseAuth.instance;
   bool _passwordVisible = false;
+  final FocusNode _firstNameFocus = FocusNode();
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -78,15 +79,23 @@ class _RegisterStudentState extends State<RegisterStudent> {
             child: Scaffold(
               resizeToAvoidBottomInset: false,
               backgroundColor: Colors.transparent,
-              body: Column(
+              body:  Column(
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(left: 50, right: 50, top:320),
-                    child: TextField(
+                    child: TextFormField(
                         onChanged: (value) {
                           _firstname = value;
                         },
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Please enter your first name.';
+                          }
+                          return null;
+                        },
                         keyboardType: TextInputType.text,
+                        autofocus: false,
+                        textInputAction: TextInputAction.next,
                         textAlign: TextAlign.start,
                         decoration:
                         kInputDecoration.copyWith(hintText: "First name", fillColor: Colors.white, filled: true)),
@@ -97,11 +106,19 @@ class _RegisterStudentState extends State<RegisterStudent> {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(left: 50, right: 50),
-                    child: TextField(
+                    child: TextFormField(
                         onChanged: (value) {
                           _lastname = value;
                         },
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Please enter your last name.';
+                          }
+                          return null;
+                        },
                         keyboardType: TextInputType.text,
+                        autofocus: false,
+                        textInputAction: TextInputAction.next,
                         textAlign: TextAlign.start,
                         decoration:
                         kInputDecoration.copyWith(hintText: "Last name", fillColor: Colors.white, filled: true)),
@@ -112,11 +129,19 @@ class _RegisterStudentState extends State<RegisterStudent> {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(left: 50, right: 50),
-                    child: TextField(
+                    child: TextFormField(
                         onChanged: (value) {
                           _email = value;
                         },
+                        validator: (value) {
+                          if (value!.isEmpty || !value.contains('@')) {
+                            return 'Please enter a valid email.';
+                          }
+                          return null;
+                        },
                         keyboardType: TextInputType.emailAddress,
+                        autofocus: true,
+                        textInputAction: TextInputAction.next,
                         textAlign: TextAlign.start,
                         decoration:
                         kInputDecoration.copyWith(hintText: "Email", fillColor: Colors.white, filled: true)),
@@ -127,12 +152,20 @@ class _RegisterStudentState extends State<RegisterStudent> {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(left: 50, right: 50),
-                    child: TextField(
+                    child: TextFormField(
                       keyboardType: TextInputType.text,
                       //controller: _userPasswordController,
                       onChanged: (value) {
                         _password = value;
                       },
+                      validator: (value) {
+                        if (value!.length < 8) {
+                          return 'Password must be longer than 8 characters.';
+                        }
+                        return null;
+                      },
+                      autofocus: false,
+                      textInputAction: TextInputAction.next,
                       style: const TextStyle(),
                       obscureText: !_passwordVisible,
                       decoration: kInputDecoration.copyWith(
@@ -167,7 +200,33 @@ class _RegisterStudentState extends State<RegisterStudent> {
                     height: 25.0,
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(top: 35.0, left: 0.0),
+                    padding: const EdgeInsets.only(left: 50, right: 50),
+                    child: TextFormField(
+                        style: const TextStyle(),
+                        onChanged: (value) {
+                          _confirmpassword = value;
+                        },
+                        autofocus: false,
+                        obscureText: true,
+                        textInputAction: TextInputAction.done,
+                        validator: (value) {
+                          if (_confirmpassword.length > 8 &&
+                              _password != value) {
+                            return 'Passwords do not match.';
+                          }
+                          return null;
+                        },
+                        keyboardType: TextInputType.text,
+                        onFieldSubmitted: (term) {
+                          FocusScope.of(context).requestFocus(_firstNameFocus);
+                        },
+                        textAlign: TextAlign.start,
+                        decoration:
+                        kInputDecoration.copyWith(
+                            hintText: "Confirm Password", fillColor: Colors.white, filled: true)),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 15.0, left: 0.0),
                     child: Container(
                       width: 150,
                       height: 60,
@@ -190,24 +249,32 @@ class _RegisterStudentState extends State<RegisterStudent> {
                           'Register',
                           style: TextStyle(color: Colors.white, fontSize: 20),
                         ),
-    onPressed:() {
-    FirebaseAuth.instance.createUserWithEmailAndPassword(
-    email: _email,
-    password: _password)
-        .then((onValue) {
-    Firestore.instance.collection("data").document(_firstname).setData({
-    "firstname": _firstname,
-    "lastname": _lastname,
-    "email": _email,
-    "password":_password,
-    }).then((userInfoValue) {
-    Navigator.pushNamed(context, '/LoginStudent');
-    });
-    }).catchError((onError) {
-    processError(onError);
-    });
-    },
+                        onPressed:() {
+                          FirebaseAuth.instance.createUserWithEmailAndPassword(
+                              email: _email,
+                              password: _password)
+                              .then((onValue) {
+                            Firestore.instance.collection("data").document(_firstname).setData({
+                              "firstname": _firstname,
+                              "lastname": _lastname,
+                              "email": _email,
+                              "password":_password,
+                            }).then((userInfoValue) {
+                              Navigator.pushNamed(context, '/LoginRegister');
+                            });
+                          }).catchError((onError) {
+                            processError(onError);
+                          });
+                        },
                       ),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(
+                      '$_errorMessage',
+                      style: TextStyle(fontSize: 14.0, color: Colors.red),
+                      textAlign: TextAlign.center,
                     ),
                   ),
                 ],

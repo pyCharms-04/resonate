@@ -511,7 +511,7 @@ class _LoginStudentState extends State<LoginStudent> {
                               var userRecord = FirebaseAuth.instance.currentUser().then((user) => Variables.currentEmail =user.email);
                               SharedPreferences prefs = await SharedPreferences.getInstance();
                               prefs.setString('email', _email);
-                              Navigator.pushNamed(context, '/Dashboard');
+                              Navigator.pushNamed(context, '/DashboardS');
                               print("Logged IN");
                               print(Variables.currentEmail);
                             }

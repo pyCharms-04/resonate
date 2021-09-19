@@ -50,6 +50,7 @@ dependencies:
   objectdb: ^1.2.1+1
   permission_handler: ^5.1.0+2
   provider: ^5.0.0
+  image_picker: ^0.6.7+22
 
 dev_dependencies:
   flutter_test:
